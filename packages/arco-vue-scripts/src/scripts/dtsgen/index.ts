@@ -26,6 +26,7 @@ export async function build(input: string, options?: { outDir?: string }) {
       esModuleInterop: true,
       skipLibCheck: true,
       jsx: 1,
+      preserveSymlinks: true,
     },
     tsConfigFilePath,
     skipAddingFilesFromTsConfig: true,
@@ -110,7 +111,9 @@ export async function build(input: string, options?: { outDir?: string }) {
         );
       })
     );
-  } catch {}
+  } catch (e) {
+    console.error('[dtsgen] Error during emit:', e);
+  }
 }
 
 const removeVueSpecifier = (sourceFile: SourceFile) => {
