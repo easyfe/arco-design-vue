@@ -25,11 +25,11 @@ arco-design-vue/
 
 ### 包名映射关系
 
-| 原始包名 | 新包名 | 说明 |
-|---------|--------|------|
-| `@arco-design/web-vue` | `@easyfe/arco-design-vue` | 核心组件库 |
-| `@arco-design/arco-vue-scripts` | 未改名 | 内部构建工具，不发布 |
-| `@arco-design/arco-vue-docs` | 未改名 | 文档站，不发布 |
+| 原始包名                        | 新包名                    | 说明                 |
+| ------------------------------- | ------------------------- | -------------------- |
+| `@arco-design/web-vue`          | `@easyfe/arco-design-vue` | 核心组件库           |
+| `@arco-design/arco-vue-scripts` | 未改名                    | 内部构建工具，不发布 |
+| `@arco-design/arco-vue-docs`    | 未改名                    | 文档站，不发布       |
 
 ### 包名别名处理
 
@@ -59,6 +59,7 @@ pnpm run init
 ```
 
 `pnpm run init` 做了三件事：
+
 1. 构建 `arco-changelog`、`vite-plugin-arco-vue-docs`、`arco-vue-scripts` 三个工具包
 2. 重新 `pnpm install` 以链接工具包的 bin 命令
 3. 执行 `@easyfe/arco-design-vue` 的 `init` 脚本（生成图标组件、组件入口文件等）
@@ -91,12 +92,12 @@ pnpm run storybook
 
 ### 其他常用命令
 
-| 命令 | 说明 |
-|------|------|
-| `pnpm run test` | 运行组件单元测试（Jest） |
-| `pnpm run docgen` | 生成组件 API 文档 |
-| `pnpm run build:site` | 构建文档站静态资源 |
-| `pnpm run clean` | 清理所有包的 `dist/` 和 `node_modules/` |
+| 命令                  | 说明                                    |
+| --------------------- | --------------------------------------- |
+| `pnpm run test`       | 运行组件单元测试（Jest）                |
+| `pnpm run docgen`     | 生成组件 API 文档                       |
+| `pnpm run build:site` | 构建文档站静态资源                      |
+| `pnpm run clean`      | 清理所有包的 `dist/` 和 `node_modules/` |
 
 ---
 
@@ -109,6 +110,7 @@ pnpm run storybook
 **问题**：在 Transfer 组件中输入搜索关键词后，点击"全选"会选中所有项目（包括被搜索过滤掉的不可见项），而不是只选中当前搜索结果。
 
 **修复方案**：
+
 - 新增 `filteredValidValues` 计算属性，基于搜索过滤后的数据计算有效（非禁用）项
 - 新增 `filteredSelectedCount` 计算属性，统计过滤结果中已选中的数量
 - `checked` 和 `indeterminate` 状态基于过滤后的数据计算
@@ -117,6 +119,7 @@ pnpm run storybook
 ### 4.2 类型提示丢失（TS2742 / TS4023）
 
 **文件**：
+
 - `packages/arco-vue-scripts/src/scripts/dtsgen/index.ts`
 - `packages/web-vue/tsconfig.json`
 - `packages/web-vue/components/image/preview-toolbar.vue`
@@ -124,6 +127,7 @@ pnpm run storybook
 **问题**：pnpm 迁移后，`.d.ts` 文件生成时出现 `TS2742`（类型推断引用了 `.pnpm` 下的非可移植路径）和 `TS4023`（导出了未命名的类型），导致构建后的包缺少类型提示。`dtsgen` 脚本中的空 `catch {}` 还会静默吞掉错误。
 
 **修复方案**：
+
 1. `dtsgen/index.ts`：`catch {}` 改为 `catch (e) { console.error(...) }`，暴露错误
 2. `dtsgen/index.ts`：`ts-morph` 的 `compilerOptions` 中添加 `preserveSymlinks: true`
 3. `web-vue/tsconfig.json`：添加 `"preserveSymlinks": true`
@@ -136,6 +140,7 @@ pnpm run storybook
 上游修复了一个 bug：在 `month/quarter/year` 模式下，`disabledDate` 原来只对单元格代表的第一天调用一次，导致整个月/季/年的禁用判断不准确。修复后改为遍历范围内所有天，只有全部天都被禁用才禁用该单元格。
 
 此修改是合理的 bug 修复，已保留。注意事项：
+
 - `disabledDate` 回调函数不应包含网络请求或重计算逻辑
 - year 模式下会遍历 365 天调用 `disabledDate`
 
@@ -163,6 +168,7 @@ git push origin v2.58.1
 ```
 
 GitHub Actions（`.github/workflows/publish.yml`）会自动：
+
 1. 安装依赖并构建工具链
 2. 初始化并构建组件库
 3. 从 tag 名提取版本号写入 `package.json`
@@ -172,20 +178,21 @@ GitHub Actions（`.github/workflows/publish.yml`）会自动：
 
 在 GitHub 仓库的 **Settings → Secrets and variables → Actions** 中添加：
 
-| Secret 名称 | 说明 |
-|-------------|------|
+| Secret 名称        | 说明                                              |
+| ------------------ | ------------------------------------------------- |
 | `EASYFE_NPM_TOKEN` | npm access token，需要有 `@easyfe` 组织的发布权限 |
 
 ### 文档站部署（GitHub Pages）
 
 文档站会在以下情况自动部署到 GitHub Pages：
-- 推送到 `main` 分支
+
 - 推送 `v*` 标签
 - 手动触发（workflow_dispatch）
 
 部署后访问地址：`https://easyfe.github.io/arco-design-vue/`
 
 GitHub Actions（`.github/workflows/deploy-docs.yml`）会自动：
+
 1. 安装依赖并构建工具链
 2. 初始化组件库（生成图标、入口文件）
 3. 构建文档站（`pnpm run build:site`），通过 `AssetsPublicPath` 环境变量设置 base 为 `/arco-design-vue/`
@@ -279,16 +286,16 @@ npx arco-vue-scripts dtsgen
 
 ## 八、关键文件索引
 
-| 文件 | 说明 |
-|------|------|
-| `package.json` | 根 monorepo 配置，定义全局脚本 |
-| `packages/web-vue/package.json` | 组件库配置，包名 `@easyfe/arco-design-vue` |
-| `packages/web-vue/components/` | 所有组件源码 |
-| `packages/web-vue/tsconfig.json` | 组件库 TS 配置（含 `preserveSymlinks`） |
-| `packages/arco-vue-scripts/src/configs/vite.site.dev.ts` | 文档站 Vite dev 配置（含别名） |
-| `packages/arco-vue-scripts/src/configs/vite.site.prod.ts` | 文档站 Vite prod 配置（含别名） |
-| `packages/arco-vue-scripts/src/scripts/dtsgen/index.ts` | .d.ts 生成脚本 |
-| `packages/arco-vue-docs/package.json` | 文档站依赖（含 pnpm 别名） |
-| `packages/arco-vue-docs/tsconfig.json` | 文档站 TS 配置（含路径映射） |
-| `.github/workflows/publish.yml` | npm 自动发布 workflow |
-| `.github/workflows/deploy-docs.yml` | 文档站 GitHub Pages 部署 workflow |
+| 文件                                                      | 说明                                       |
+| --------------------------------------------------------- | ------------------------------------------ |
+| `package.json`                                            | 根 monorepo 配置，定义全局脚本             |
+| `packages/web-vue/package.json`                           | 组件库配置，包名 `@easyfe/arco-design-vue` |
+| `packages/web-vue/components/`                            | 所有组件源码                               |
+| `packages/web-vue/tsconfig.json`                          | 组件库 TS 配置（含 `preserveSymlinks`）    |
+| `packages/arco-vue-scripts/src/configs/vite.site.dev.ts`  | 文档站 Vite dev 配置（含别名）             |
+| `packages/arco-vue-scripts/src/configs/vite.site.prod.ts` | 文档站 Vite prod 配置（含别名）            |
+| `packages/arco-vue-scripts/src/scripts/dtsgen/index.ts`   | .d.ts 生成脚本                             |
+| `packages/arco-vue-docs/package.json`                     | 文档站依赖（含 pnpm 别名）                 |
+| `packages/arco-vue-docs/tsconfig.json`                    | 文档站 TS 配置（含路径映射）               |
+| `.github/workflows/publish.yml`                           | npm 自动发布 workflow                      |
+| `.github/workflows/deploy-docs.yml`                       | 文档站 GitHub Pages 部署 workflow          |
