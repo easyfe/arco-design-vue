@@ -42,11 +42,12 @@ jobs:
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
           cd packages/web-vue
-          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          node -e "const pkg=require('./package.json');pkg.version='$VERSION';require('fs').writeFileSync('package.json',JSON.stringify(pkg,null,2)+'\n')"
 
       - name: Publish
         run: |
           cd packages/web-vue
-          npm publish --access public
+          pnpm publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.EASYFE_NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: false
