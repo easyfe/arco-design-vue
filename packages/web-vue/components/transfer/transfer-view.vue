@@ -139,32 +139,6 @@ export default defineComponent({
     const countSelected = computed(() => props.dataInfo.selected.length);
     const countRendered = computed(() => props.dataInfo.data.length);
 
-    const checked = computed(
-      () =>
-        props.dataInfo.selected.length > 0 &&
-        props.dataInfo.selected.length === props.dataInfo.allValidValues.length
-    );
-    const indeterminate = computed(
-      () =>
-        props.dataInfo.selected.length > 0 &&
-        props.dataInfo.selected.length < props.dataInfo.allValidValues.length
-    );
-
-    const handleSelectAllChange = (checked: boolean) => {
-      if (checked) {
-        transferCtx?.onSelect([
-          ...props.selected,
-          ...props.dataInfo.allValidValues,
-        ]);
-      } else {
-        transferCtx?.onSelect(
-          props.selected.filter(
-            (value) => !props.dataInfo.allValidValues.includes(value)
-          )
-        );
-      }
-    };
-
     const filteredData = computed(() =>
       props.dataInfo.data.filter((item) => {
         if (filter.value) {
@@ -173,6 +147,43 @@ export default defineComponent({
         return true;
       })
     );
+
+    const filteredValidValues = computed(() =>
+      filteredData.value
+        .filter((item) => !item.disabled)
+        .map((item) => item.value)
+    );
+
+    const filteredSelectedCount = computed(
+      () =>
+        filteredValidValues.value.filter((value) =>
+          props.dataInfo.selected.includes(value)
+        ).length
+    );
+
+    const checked = computed(
+      () =>
+        filteredValidValues.value.length > 0 &&
+        filteredSelectedCount.value === filteredValidValues.value.length
+    );
+    const indeterminate = computed(
+      () =>
+        filteredSelectedCount.value > 0 &&
+        filteredSelectedCount.value < filteredValidValues.value.length
+    );
+
+    const handleSelectAllChange = (checked: boolean) => {
+      if (checked) {
+        const newSelected = new Set(props.selected);
+        filteredValidValues.value.forEach((v) => newSelected.add(v));
+        transferCtx?.onSelect([...newSelected]);
+      } else {
+        const removeSet = new Set(filteredValidValues.value);
+        transferCtx?.onSelect(
+          props.selected.filter((value) => !removeSet.has(value))
+        );
+      }
+    };
 
     const handleSearch = (value: string) => {
       emit('search', value, props.type);
