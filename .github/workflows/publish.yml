@@ -33,10 +33,10 @@ jobs:
         run: pnpm install
 
       - name: Init component library
-        run: pnpm -F @easyfe/web-vue run init
+        run: pnpm -F @easyfe/arco-design-vue run init
 
       - name: Build component library
-        run: pnpm -F @easyfe/web-vue run build
+        run: pnpm -F @easyfe/arco-design-vue run build
 
       - name: Set version from tag
         run: |
