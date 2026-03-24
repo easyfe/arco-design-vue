@@ -176,6 +176,23 @@ GitHub Actions（`.github/workflows/publish.yml`）会自动：
 |-------------|------|
 | `EASYFE_NPM_TOKEN` | npm access token，需要有 `@easyfe` 组织的发布权限 |
 
+### 文档站部署（GitHub Pages）
+
+文档站会在以下情况自动部署到 GitHub Pages：
+- 推送到 `main` 分支
+- 推送 `v*` 标签
+- 手动触发（workflow_dispatch）
+
+部署后访问地址：`https://easyfe.github.io/arco-design-vue/`
+
+GitHub Actions（`.github/workflows/deploy-docs.yml`）会自动：
+1. 安装依赖并构建工具链
+2. 初始化组件库（生成图标、入口文件）
+3. 构建文档站（`pnpm run build:site`），通过 `AssetsPublicPath` 环境变量设置 base 为 `/arco-design-vue/`
+4. 使用 `peaceiris/actions-gh-pages@v3` 将产物推送到 `gh-pages` 分支
+
+**首次启用需要**：在 GitHub 仓库 **Settings → Pages** 中将 Source 设置为 `Deploy from a branch`，分支选择 `gh-pages`，目录选择 `/ (root)`。
+
 ### 手动发布
 
 ```bash
@@ -273,4 +290,5 @@ npx arco-vue-scripts dtsgen
 | `packages/arco-vue-scripts/src/scripts/dtsgen/index.ts` | .d.ts 生成脚本 |
 | `packages/arco-vue-docs/package.json` | 文档站依赖（含 pnpm 别名） |
 | `packages/arco-vue-docs/tsconfig.json` | 文档站 TS 配置（含路径映射） |
-| `.github/workflows/publish.yml` | 自动发布 workflow |
+| `.github/workflows/publish.yml` | npm 自动发布 workflow |
+| `.github/workflows/deploy-docs.yml` | 文档站 GitHub Pages 部署 workflow |
