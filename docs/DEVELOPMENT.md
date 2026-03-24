@@ -36,8 +36,8 @@ arco-design-vue/
 由于项目内部（文档站、Storybook 等）大量代码引用了旧包名 `@arco-design/web-vue`，全局替换成本太高，因此采用别名方式兼容：
 
 - **pnpm 依赖别名**：`arco-vue-docs/package.json` 中使用 `"@arco-design/web-vue": "workspace:@easyfe/arco-design-vue@*"` 将旧包名映射到新包
-- **Vite resolve alias**：`arco-vue-scripts/src/configs/vite.site.dev.ts` 和 `vite.site.prod.ts` 中配置了 `@arco-design/web-vue` → `../web-vue/components` 的别名
-- **TypeScript paths**：`arco-vue-docs/tsconfig.json` 中配置了 `@arco-design/web-vue` 和 `@arco-design/web-vue/es/icon` 的路径映射，使 ESLint 的 `import/no-unresolved` 规则能正确解析
+- **Vite resolve alias**：`arco-vue-scripts/src/configs/vite.site.dev.ts` 和 `vite.site.prod.ts` 中配置了 `@arco-design/web-vue` → `../web-vue/components` 以及 `@arco-design/web-vue/es/*` → `../web-vue/components/*` 的别名（将 `es/` 子路径如 `es/icon`、`es/locale/lang/zh-cn` 正确映射到源码目录）
+- **TypeScript paths**：`arco-vue-docs/tsconfig.json` 中配置了 `@arco-design/web-vue`、`@arco-design/web-vue/es/*`、`@arco-design/web-vue/*` 的路径映射，使 ESLint 的 `import/no-unresolved` 规则能正确解析
 
 ---
 

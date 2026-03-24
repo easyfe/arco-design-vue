@@ -16,8 +16,8 @@
       "@arco-design/web-vue": [
         "../web-vue/components"
       ],
-      "@arco-design/web-vue/es/icon": [
-        "../web-vue/components/icon"
+      "@arco-design/web-vue/es/*": [
+        "../web-vue/components/*"
       ],
       "@arco-design/web-vue/*": [
         "../web-vue/components/*"

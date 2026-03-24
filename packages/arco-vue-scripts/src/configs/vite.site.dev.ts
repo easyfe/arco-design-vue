@@ -30,8 +30,8 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        find: '@arco-design/web-vue/es/icon',
-        replacement: path.resolve(root, '../web-vue/components/icon'),
+        find: /^@arco-design\/web-vue\/es\/(.*)/,
+        replacement: path.resolve(root, '../web-vue/components/$1'),
       },
       {
         find: '@arco-design/web-vue',
