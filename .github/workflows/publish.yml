@@ -1,0 +1,52 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.5.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build tools
+        run: pnpm -F @arco-design/arco-changelog -F @arco-design/vite-plugin-arco-vue-docs -F @arco-design/arco-vue-scripts run build
+
+      - name: Reinstall to link bins
+        run: pnpm install
+
+      - name: Init component library
+        run: pnpm -F @easyfe/web-vue run init
+
+      - name: Build component library
+        run: pnpm -F @easyfe/web-vue run build
+
+      - name: Set version from tag
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          cd packages/web-vue
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+
+      - name: Publish
+        run: |
+          cd packages/web-vue
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.EASYFE_NPM_TOKEN }}
